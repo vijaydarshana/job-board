@@ -12,6 +12,7 @@ export default function Register() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setForm({
@@ -25,11 +26,8 @@ export default function Register() {
 
     try {
       setLoading(true);
-
       const res = await api.post("/auth/register", form);
-
       alert(res.data.message);
-
       navigate("/login");
     } catch (err) {
       alert(err.response?.data?.message || "Registration Failed");
@@ -39,11 +37,12 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100">
-      <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center mb-6">
-          Create Account
-        </h1>
+    <div className="flex min-h-[80vh] items-center justify-center px-4 py-10">
+      <div className="w-full max-w-md rounded-4xl border border-white/70 bg-white/80 p-8 shadow-2xl shadow-indigo-100/60 backdrop-blur-xl">
+        <div className="mb-6 text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-indigo-600">Join now</p>
+          <h1 className="mt-2 text-3xl font-bold text-slate-900">Create your account</h1>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
@@ -52,7 +51,7 @@ export default function Register() {
             placeholder="Full Name"
             value={form.name}
             onChange={handleChange}
-            className="w-full border rounded-lg p-3"
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-indigo-400 focus:bg-white"
             required
           />
 
@@ -62,34 +61,44 @@ export default function Register() {
             placeholder="Email Address"
             value={form.email}
             onChange={handleChange}
-            className="w-full border rounded-lg p-3"
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-indigo-400 focus:bg-white"
             required
           />
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-3"
-            required
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+              value={form.password}
+              onChange={handleChange}
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-12 outline-none transition focus:border-indigo-400 focus:bg-white"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute inset-y-0 right-3 flex items-center text-slate-500 transition hover:text-slate-700"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+            className="w-full rounded-2xl bg-linear-to-r from-indigo-600 to-fuchsia-600 px-4 py-3 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {loading ? "Creating Account..." : "Register"}
           </button>
         </form>
 
-        <p className="text-center mt-6">
+        <p className="mt-6 text-center text-sm text-slate-600">
           Already have an account?{" "}
           <span
             onClick={() => navigate("/login")}
-            className="text-blue-600 cursor-pointer hover:underline"
+            className="cursor-pointer font-semibold text-indigo-600 hover:underline"
           >
             Login
           </span>

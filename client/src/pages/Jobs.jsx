@@ -40,83 +40,86 @@ export default function Jobs() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <h2 className="text-2xl font-semibold">Loading jobs...</h2>
+      <div className="flex min-h-screen items-center justify-center px-4">
+        <div className="rounded-3xl border border-slate-200 bg-white/80 px-8 py-6 text-center shadow-lg backdrop-blur">
+          <h2 className="text-2xl font-semibold text-slate-900">Loading premium opportunities...</h2>
+          <p className="mt-2 text-slate-600">Please wait while we load the latest roles.</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-5">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-8">
-          Available Jobs
-        </h1>
+    <div className="px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-8 rounded-[2rem] border border-white/70 bg-white/80 p-8 shadow-2xl shadow-indigo-100/60 backdrop-blur-xl">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-indigo-600">Curated roles</p>
+              <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">Explore the best opportunities</h1>
+            </div>
+            <p className="max-w-xl text-sm text-slate-600">
+              Filter by role, company, or location and discover positions designed for ambitious professionals.
+            </p>
+          </div>
 
-        <div className="grid md:grid-cols-2 gap-4 mb-8">
-          <input
-            type="text"
-            placeholder="Search by title or company..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="border rounded-lg p-3"
-          />
+          <div className="mt-8 grid gap-4 md:grid-cols-2">
+            <input
+              type="text"
+              placeholder="Search by title or company..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-700 outline-none ring-0 transition focus:border-indigo-400 focus:bg-white"
+            />
 
-          <input
-            type="text"
-            placeholder="Filter by location..."
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="border rounded-lg p-3"
-          />
+            <input
+              type="text"
+              placeholder="Filter by location..."
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-700 outline-none ring-0 transition focus:border-indigo-400 focus:bg-white"
+            />
+          </div>
         </div>
 
         {filteredJobs.length === 0 ? (
-          <div className="text-center text-gray-500 text-xl">
-            No jobs found.
+          <div className="rounded-[2rem] border border-dashed border-slate-300 bg-white/70 px-8 py-16 text-center text-xl text-slate-500 shadow-sm">
+            No jobs found. Try a broader search.
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {filteredJobs.map((job) => (
               <div
                 key={job.id}
-                className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition"
+                className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60 transition hover:-translate-y-1 hover:shadow-xl"
               >
-                <h2 className="text-2xl font-bold">{job.title}</h2>
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-indigo-600">
+                    {job.jobType || "Open"}
+                  </span>
+                  <span className="text-sm text-slate-500">{job.location}</span>
+                </div>
 
-                <p className="text-blue-600 font-semibold mt-2">
-                  {job.company}
-                </p>
+                <h2 className="mt-4 text-2xl font-semibold text-slate-900">{job.title}</h2>
+                <p className="mt-2 font-semibold text-indigo-600">{job.company}</p>
+                <p className="mt-4 text-sm leading-6 text-slate-600">{job.description}</p>
 
-                <p className="mt-3">📍 {job.location}</p>
-
-                <p className="mt-2">
-                  💰 {job.salary || "Not Mentioned"}
-                </p>
-
-                <p className="mt-2">
-                  💼 {job.jobType || "Not Specified"}
-                </p>
-
-                <p className="mt-2">
-                  ⭐ {job.experience || "Not Specified"}
-                </p>
-
-                <p className="mt-4 text-gray-600 line-clamp-3">
-                  {job.description}
-                </p>
+                <div className="mt-5 space-y-2 text-sm text-slate-600">
+                  <p>💰 {job.salary || "Not Mentioned"}</p>
+                  <p>⭐ {job.experience || "Not Specified"}</p>
+                </div>
 
                 <div className="mt-6 flex gap-3">
                   <Link
                     to={`/jobs/${job.id}`}
-                    className="flex-1 bg-blue-600 text-white text-center py-2 rounded-lg"
+                    className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-center font-medium text-slate-700 transition hover:bg-slate-100"
                   >
                     View Details
                   </Link>
 
                   <Link
                     to={`/jobs/${job.id}`}
-                    className="flex-1 bg-green-600 text-white text-center py-2 rounded-lg"
+                    className="flex-1 rounded-2xl bg-gradient-to-r from-indigo-600 to-fuchsia-600 px-4 py-2.5 text-center font-medium text-white transition hover:opacity-90"
                   >
                     Apply
                   </Link>

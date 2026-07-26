@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Modal from "../components/Modal";
 import api from "../services/api";
 
 export default function EditJob() {
@@ -15,39 +16,40 @@ export default function EditJob() {
     experience: "",
     description: "",
   });
+  const [modal, setModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "info",
+    actionLabel: "Close",
+    onAction: null,
+  });
 
   useEffect(() => {
     const fetchJob = async () => {
-    try {
-      const res = await api.get(`/jobs/${id}`);
-     const {
-  title,
-  company,
-  location,
-  description,
-  salary,
-  jobType,
-  experience,
-} = res.data.job;
+      try {
+        const res = await api.get(`/jobs/${id}`);
+        const { title, company, location, description, salary, jobType, experience } = res.data.job;
 
-setForm({
-  title,
-  company,
-  location,
-  description,
-  salary: salary || "",
-  jobType: jobType || "",
-  experience: experience || "",
-}); 
-    } catch (err) {
-      console.error(err);
-      alert("Failed to load job.");
-    }
-  };
+        setForm({
+          title,
+          company,
+          location,
+          description,
+          salary: salary || "",
+          jobType: jobType || "",
+          experience: experience || "",
+        });
+      } catch (err) {
+        console.error(err);
+        alert("Failed to load job.");
+      }
+    };
+
     fetchJob();
-  }, []);
+  }, [id]);
 
-  
+  const closeModal = () => setModal((prev) => ({ ...prev, isOpen: false }));
 
   const handleChange = (e) => {
     setForm({
@@ -61,87 +63,69 @@ setForm({
 
     try {
       await api.put(`/jobs/${id}`, form);
-
-      alert("Job updated successfully.");
-      navigate("/dashboard");
+      setModal({
+        isOpen: true,
+        title: "Job updated",
+        message: "Your changes were saved successfully.",
+        type: "success",
+        actionLabel: "Go to dashboard",
+        onAction: () => {
+          closeModal();
+          navigate("/dashboard");
+        },
+      });
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.message || "Update failed.");
+      setModal({
+        isOpen: true,
+        title: "Update failed",
+        message: err.response?.data?.message || "Update failed.",
+        type: "error",
+        actionLabel: "Try again",
+        onAction: () => closeModal(),
+      });
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center py-10">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-lg rounded-xl p-8 w-full max-w-2xl"
-      >
-        <h1 className="text-3xl font-bold mb-6">Edit Job</h1>
+    <div className="px-4 py-10 sm:px-6 lg:px-8">
+      <form onSubmit={handleSubmit} className="mx-auto w-full max-w-3xl rounded-[2rem] border border-white/70 bg-white/80 p-8 shadow-2xl shadow-indigo-100/70 backdrop-blur-xl sm:p-10">
+        <div className="mb-8 text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-indigo-600">Update listing</p>
+          <h1 className="mt-2 text-3xl font-bold text-slate-900">Edit job details</h1>
+        </div>
 
-        <input
-          name="title"
-          value={form.title}
-          onChange={handleChange}
-          placeholder="Job Title"
-          className="w-full border p-3 rounded mb-4"
-        />
+        <div className="grid gap-4 md:grid-cols-2">
+          <input name="title" value={form.title} onChange={handleChange} placeholder="Job Title" className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-indigo-400 focus:bg-white" />
+          <input name="company" value={form.company} onChange={handleChange} placeholder="Company" className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-indigo-400 focus:bg-white" />
+        </div>
 
-        <input
-          name="company"
-          value={form.company}
-          onChange={handleChange}
-          placeholder="Company"
-          className="w-full border p-3 rounded mb-4"
-        />
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <input name="location" value={form.location} onChange={handleChange} placeholder="Location" className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-indigo-400 focus:bg-white" />
+          <input name="salary" value={form.salary || ""} onChange={handleChange} placeholder="Salary" className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-indigo-400 focus:bg-white" />
+        </div>
 
-        <input
-          name="location"
-          value={form.location}
-          onChange={handleChange}
-          placeholder="Location"
-          className="w-full border p-3 rounded mb-4"
-        />
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <input name="jobType" value={form.jobType || ""} onChange={handleChange} placeholder="Job Type" className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-indigo-400 focus:bg-white" />
+          <input name="experience" value={form.experience || ""} onChange={handleChange} placeholder="Experience" className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-indigo-400 focus:bg-white" />
+        </div>
 
-        <input
-          name="salary"
-          value={form.salary || ""}
-          onChange={handleChange}
-          placeholder="Salary"
-          className="w-full border p-3 rounded mb-4"
-        />
+        <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description" rows="6" className="mt-4 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-indigo-400 focus:bg-white" />
 
-        <input
-          name="jobType"
-          value={form.jobType || ""}
-          onChange={handleChange}
-          placeholder="Job Type"
-          className="w-full border p-3 rounded mb-4"
-        />
-
-        <input
-          name="experience"
-          value={form.experience || ""}
-          onChange={handleChange}
-          placeholder="Experience"
-          className="w-full border p-3 rounded mb-4"
-        />
-
-        <textarea
-          name="description"
-          value={form.description}
-          onChange={handleChange}
-          placeholder="Description"
-          rows="6"
-          className="w-full border p-3 rounded mb-6"
-        />
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg"
-        >
+        <button type="submit" className="mt-6 w-full rounded-2xl bg-gradient-to-r from-indigo-600 to-fuchsia-600 px-4 py-3 font-semibold text-white transition hover:opacity-90">
           Update Job
         </button>
       </form>
+
+      <Modal
+        isOpen={modal.isOpen}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        actionLabel={modal.actionLabel}
+        onAction={modal.onAction}
+        onClose={closeModal}
+      />
     </div>
   );
 }
